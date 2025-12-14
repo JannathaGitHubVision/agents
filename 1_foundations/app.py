@@ -77,7 +77,7 @@ class Me:
 
     def __init__(self):
         self.openai = OpenAI()
-        self.name = "Ed Donner"
+        self.name = "Venkata Vikranth Janantha"
         reader = PdfReader("me/linkedin.pdf")
         self.linkedin = ""
         for page in reader.pages:
@@ -111,9 +111,39 @@ If the user is engaging in discussion, try to steer them towards getting in touc
         system_prompt += f"\n\n## Summary:\n{self.summary}\n\n## LinkedIn Profile:\n{self.linkedin}\n\n"
         system_prompt += f"With this context, please chat with the user, always staying in character as {self.name}."
         return system_prompt
+
+    def _normalize_history(self, history):
+        """Convert Gradio chat history into OpenAI chat messages."""
+        if not history:
+            return []
+
+        allowed_roles = {"system", "user", "assistant", "tool", "function", "developer"}
+
+        # Newer Gradio can provide OpenAI-style message dicts already
+        if isinstance(history, list) and history and isinstance(history[0], dict):
+            normalized = []
+            for item in history:
+                role = item.get("role")
+                content = item.get("content")
+                if role in allowed_roles and isinstance(content, str):
+                    normalized.append({"role": role, "content": content})
+            return normalized
+
+        # Legacy Gradio provides tuples: [(user_msg, assistant_msg), ...]
+        normalized = []
+        for pair in history:
+            if not (isinstance(pair, (list, tuple)) and len(pair) == 2):
+                continue
+            user_msg, assistant_msg = pair
+            if user_msg is not None and str(user_msg).strip() != "":
+                normalized.append({"role": "user", "content": str(user_msg)})
+            if assistant_msg is not None and str(assistant_msg).strip() != "":
+                normalized.append({"role": "assistant", "content": str(assistant_msg)})
+        return normalized
     
     def chat(self, message, history):
-        messages = [{"role": "system", "content": self.system_prompt()}] + history + [{"role": "user", "content": message}]
+        history_messages = self._normalize_history(history)
+        messages = [{"role": "system", "content": self.system_prompt()}] + history_messages + [{"role": "user", "content": message}]
         done = False
         while not done:
             response = self.openai.chat.completions.create(model="gpt-4o-mini", messages=messages, tools=tools)
@@ -130,5 +160,7 @@ If the user is engaging in discussion, try to steer them towards getting in touc
 
 if __name__ == "__main__":
     me = Me()
-    gr.ChatInterface(me.chat, type="messages").launch()
+    gr.ChatInterface(me.chat).launch(share=True)
+    
+
     
