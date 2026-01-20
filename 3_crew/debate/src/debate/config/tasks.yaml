@@ -25,3 +25,12 @@ decide:
     You decide which side is more convincing, and why.
   agent: judge
   output_file: output/decide.md
+
+reporting_task:
+  description: >
+    Combine the outputs from the propose, oppose, and decide tasks into a concise markdown report.
+    Summarize the motion, each side's argument, and the judge's decision.
+  expected_output: >
+    A well-structured markdown report summarizing the debate.
+  agent: judge
+  output_file: report.md
