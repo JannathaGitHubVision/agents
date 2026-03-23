@@ -1,0 +1,39 @@
+research_task:
+  description: >
+    Conduct thorough research on company {company}, Focus on:
+    1. Current company status and health
+    2. Historical company performance
+    3. Major challenges and opportunities
+    4. Recent news and events
+    5. Future outlook and potential developments
+    Use the Serper search tool to gather current web information.
+    Prioritize sources from the last 90 days when available.
+    Include source URLs and publication dates for key claims.
+    Make sure to organize your findings in a structured format with clear sections.
+  expected_output: >
+    A comprehensive research report with the main topics, each with a full section of information.
+    All of them were requested aspects of {company}. Include specific facts, figures,
+    and examples where relevant.
+  
+  agent: researcher
+
+
+
+analyst_task:
+  description: >
+    Analyze the research findings on company {company} and create a comprehensive, well-structured report
+    that presents insights in a clear and engaging way. Focus on:
+    1. Begin with an executive summary
+    2. Include all key information from the research
+    3. Key strengths and weaknesses of the company
+    4. Major opportunities and threats
+    5. Overall assessment of the company's current position and future prospects
+    Make sure to organize your report in a structured format with clear sections.
+  expected_output: >
+    it needs to be in a polished, professional report on {company} that presents the research
+    findings in a clear and engaging way. Along with that, it needs to include analysis and insights.
+    As a result, this should be well-structured with an executive summary, main sections and conclusions.
+  agent: analyst
+  context:
+    - research_task
+  output_file: output/report.md
