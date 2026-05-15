@@ -5,7 +5,6 @@ from typing import List
 
 from crewai_tools import SerperDevTool
 from pydantic import Field, BaseModel
-
 from .tools.push_tool import PushNotificationTool
 
 
