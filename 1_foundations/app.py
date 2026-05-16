@@ -79,12 +79,12 @@ class Me:
         self.openai = OpenAI()
         self.name = "Venkata Vikranth Jannatha"
         reader = PdfReader("me/VVJ.pdf")
-        self.extract_cv_info = ""
+        self.linkedin = ""
         for page in reader.pages:
             text = page.extract_text()
             if text:
-                self.extract_cv_info += text
-        self.summary = self.extract_cv_info[:2000]
+                self.linkedin += text
+        self.summary = self.linkedin[:2000]
 
 
     def handle_tool_call(self, tool_calls):
