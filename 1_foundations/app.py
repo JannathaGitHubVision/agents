@@ -77,8 +77,8 @@ class Me:
 
     def __init__(self):
         self.openai = OpenAI()
-        self.name = "Venkata Vikranth Janantha"
-        reader = PdfReader("me/linkedin.pdf")
+        self.name = "Venkata Vikranth Jannatha"
+        reader = PdfReader("me/VVJ.pdf")
         self.linkedin = ""
         for page in reader.pages:
             text = page.extract_text()
@@ -93,9 +93,15 @@ class Me:
         for tool_call in tool_calls:
             tool_name = tool_call.function.name
             arguments = json.loads(tool_call.function.arguments)
-            print(f"Tool called: {tool_name}", flush=True)
-            tool = globals().get(tool_name)
-            result = tool(**arguments) if tool else {}
+            print(f"Tool Called : {tool_name}", flush=True)
+            
+            if tool_name == "record_user_details":
+                result = record_user_details(**arguments)
+            elif tool_name == "record_unknown_question":
+                result = record_unknown_question(**arguments)
+            else:
+                result = {}
+            
             results.append({"role": "tool","content": json.dumps(result),"tool_call_id": tool_call.id})
         return results
     
@@ -147,11 +153,14 @@ If the user is engaging in discussion, try to steer them towards getting in touc
         done = False
         while not done:
             response = self.openai.chat.completions.create(model="gpt-4o-mini", messages=messages, tools=tools)
-            if response.choices[0].finish_reason=="tool_calls":
-                message = response.choices[0].message
-                tool_calls = message.tool_calls
+            finish_reason = response.choices[0].finish_reason
+            print(finish_reason)
+            
+            if finish_reason == "tool_calls":
+                message_obj = response.choices[0].message
+                tool_calls = message_obj.tool_calls
                 results = self.handle_tool_call(tool_calls)
-                messages.append(message)
+                messages.append(message_obj)
                 messages.extend(results)
             else:
                 done = True
